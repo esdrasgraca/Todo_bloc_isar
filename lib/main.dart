@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_bloc_isar/app/core/core_isar.dart';
 import 'package:todo_bloc_isar/app/routes/routes.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final isar = CoreIsar();
+  await isar.init();
+
+  runApp( MyApp(isar: isar.database,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Isar isar;
+  const MyApp({super.key, required this.isar});
 
   
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      onGenerateRoute: Routes.routes,
-      initialRoute: '/',
-      theme: ThemeData(       
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),      
+    return Provider(
+      create: (context) => isar,
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        onGenerateRoute: Routes.routes,
+        initialRoute: '/',
+        theme: ThemeData(       
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),      
+      ),
     );
   }
 }

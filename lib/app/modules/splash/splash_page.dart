@@ -16,18 +16,25 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
         body: BlocConsumer<SplashCubit, SplashState>(
       listener: (context, state) {
-        
+        if (state is SplashLoaded) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
       },
       builder: (context, state) {
-        return 
-        switch (state) {
-                    
-          SplashInitial() => const SizedBox(),          
-          SplashLoading() => const CircularProgressIndicator.adaptive(),          
-          SplashLoaded() => const SizedBox(),          
-          SplashError() => Text(state.error ?? ''),
+        return switch (state) {
+          SplashInitial() => const SizedBox(),
+          SplashLoading() => const Center(child: CircularProgressIndicator.adaptive()),
+          SplashLoaded() => const SizedBox(),
+          SplashError() => Center(
+            child: Container(
+                color: Colors.red,
+                width: double.infinity,
+                height: double.infinity,
+                child: Text(state.error ?? ''),
+              ),
+          ),
         };
-      }, 
+      },
     ));
   }
 }
