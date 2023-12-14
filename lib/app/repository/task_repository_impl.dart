@@ -14,4 +14,17 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<List<Task>?> getTasks() async{
     return  _database.tasks.where().findAll();
   }
+  
+  @override
+  Future<bool> changeTask(Task task) async {
+    final updated = await _database.writeTxn(() async => _database.tasks.put(task));
+    return (updated != 0);
+  }
+
+  @override
+  Future<bool> createTask(Task task) async {
+    final created = await _database.writeTxn(() async => _database.tasks.put(task));
+        return (created != 0);
+
+  }
 }

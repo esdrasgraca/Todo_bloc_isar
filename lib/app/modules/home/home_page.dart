@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_bloc_isar/app/modules/cadastro/cadastro_route.dart';
 import 'package:todo_bloc_isar/app/modules/home/cubit/home_cubit.dart';
 import 'package:todo_bloc_isar/app/modules/home/widgets/list_task.dart';
 
@@ -18,7 +21,16 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(),
       floatingActionButton: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-          onPressed: () {},
+          onPressed: () async {
+            final data = await showModalBottomSheet(
+              context: context,
+              builder: (_) => CadastroRoute().page(context),
+            );
+
+            if(data != null) {
+              widget.controller.loadTasks();
+            }
+          },
           child: const Icon(
             Icons.add,
             color: Colors.white,
@@ -27,22 +39,29 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           const Center(
-            child: Text("Home Page"),
+            child: Text("Minha Lista"),
           ),
           const SizedBox(
             height: 30,
           ),
-          BlocBuilder<HomeCubit, HomeState>(
-            builder: (context, state) {
-              return Center(
-                child: switch(state){              
-                  HomeInitial() => const SizedBox(),
-                  HomeLoading() => const CircularProgressIndicator.adaptive(),              
-                  HomeError() => const SizedBox(),              
-                  HomeLoaded() => ListTask(tasks: state.tasks),
-                },
-              );
-            },
+          Expanded(
+            child: BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return Center(
+                  child: switch (state) {
+                    HomeInitial() => const SizedBox(),
+                    HomeLoading() => const CircularProgressIndicator.adaptive(),
+                    HomeError() => const SizedBox(),
+                    HomeLoaded() => ListTask(
+                        tasks: state.tasks,
+                        onChanged: (task) async {
+                          await widget.controller.changeTask(task);
+                        },
+                      ),
+                  },
+                );
+              },
+            ),
           )
         ],
       ),

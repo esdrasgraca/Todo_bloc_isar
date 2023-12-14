@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:todo_bloc_isar/app/data/models/task.dart';
 
 class ListTask extends StatefulWidget {
+  final Function(Task) onChanged;
   final List<Task>? tasks;
 
   const ListTask({
     super.key,
-    this.tasks,
+    required this.tasks,
+    required this.onChanged,
   });
 
   @override
@@ -22,12 +24,16 @@ class _ListTaskState extends State<ListTask> {
       itemBuilder: (context, index) {
         final task = widget.tasks![index];
         return ListTile(
-          title: Text(
-            task.tarefa.toString(),
+          leading: Checkbox(
+            onChanged: (value) => widget.onChanged(
+              task.copyWith(status: value),
+            ),
+            value: task.status,
           ),
+          title: Text(task.tarefa.toString()),
         );
       },
-      separatorBuilder: (context, index) => Divider(),
+      separatorBuilder: (context, index) => const Divider(),
       itemCount: widget.tasks?.length ?? 0,
     );
   }

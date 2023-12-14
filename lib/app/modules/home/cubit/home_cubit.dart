@@ -18,8 +18,15 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> loadTasks() async {
     emit(HomeLoading());
-
     final tasks = await _repository.getTasks();
     emit(HomeLoaded(tasks: tasks));
+  }
+
+  Future<void> changeTask(Task task) async {
+    final changed  = await _repository.changeTask(task);
+    if(changed) {
+      loadTasks();
+    }
+
   }
 }
